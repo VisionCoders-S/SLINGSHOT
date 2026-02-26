@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../utils/dummy_questions.dart';
 import '../utils/career_data.dart';
+import 'result_screen.dart';
 
 class AssessmentScreen extends StatefulWidget {
   const AssessmentScreen({super.key});
@@ -59,19 +60,13 @@ void showResults() {
     }
   }
 
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text("Your Career Match"),
-      content: Text("Top Recommendation:\n\n$bestCareer"),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text("OK"),
-        ),
-      ],
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ResultScreen(
+        careerName: bestCareer,
+        score: bestScore,
+      ),
     ),
   );
 }
