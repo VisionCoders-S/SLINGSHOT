@@ -15,14 +15,14 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
   int selectedValue = 3;
 
   Map<String, int> categoryScores = {};
-  bool isCompleted = false; // 🔥 prevents double submission
+  bool isCompleted = false;
 
   void nextQuestion() {
-    if (isCompleted) return; // stop if already finished
+    if (isCompleted) return;
 
     final currentQuestion = dummyQuestions[currentQuestionIndex];
 
-    // Store score only once
+    // Store score
     categoryScores.update(
       currentQuestion.category,
       (value) => value + selectedValue,
@@ -42,34 +42,38 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     }
   }
 
-void showResults() {
-  String bestCareer = "";
-  int bestScore = 0;
+  void showResults() {
+    List<Map<String, dynamic>> rankedCareers = [];
 
-  for (var career in careers) {
-    int total = 0;
+    for (var career in careers) {
+      int total = 0;
 
-    career.weightProfile.forEach((category, weight) {
-      int userScore = categoryScores[category] ?? 0;
-      total += userScore * weight;
-    });
+      career.weightProfile.forEach((category, weight) {
+        int userScore = categoryScores[category] ?? 0;
+        total += userScore * weight;
+      });
 
-    if (total > bestScore) {
-      bestScore = total;
-      bestCareer = career.name;
+      double percentage = (total / 75) * 100;
+
+      rankedCareers.add({
+        "name": career.name,
+        "percentage": percentage,
+      });
     }
-  }
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ResultScreen(
-        careerName: bestCareer,
-        score: bestScore,
+    rankedCareers.sort(
+        (a, b) => b["percentage"].compareTo(a["percentage"]));
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(
+          rankedCareers: rankedCareers,
+          categoryScores: categoryScores,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
